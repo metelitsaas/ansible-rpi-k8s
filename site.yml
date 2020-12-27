@@ -1,0 +1,7 @@
+---
+- name: Upgrade system
+  hosts: raspberrypi
+  become: yes
+  roles:
+    - upgrade
+    - docker

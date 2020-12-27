@@ -1,0 +1,56 @@
+---
+- name: Update apt repo
+  apt:
+    update_cache: yes
+
+- name: Install software-properties-common package
+  apt:
+    name: software-properties-common
+    state: present
+
+- name: Add Docker apt repo key
+  apt_key:
+    url: https://download.docker.com/linux/raspbian/gpg
+    state: present
+
+- name: Add Docker apt repo link
+  apt_repository:
+    repo: deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable
+    state: present
+
+- name: Update apt repo
+  apt:
+    update_cache: yes
+
+- name: Install docker-ce package
+  apt:
+    name: "docker-ce={{ docker_ce_version }}"
+    state: present
+    force: yes
+
+- name: Install docker-ce-cli package
+  apt:
+    name: "docker-ce-cli={{ docker_ce_version }}"
+    state: present
+    force: yes
+
+- name: Install containerd package
+  apt:
+    name: "containerd.io={{ containerd_version }}"
+    state: present
+    force: yes
+
+- name: Set Docker cgroup driver to systemd
+  copy:
+    dest: "/etc/docker/daemon.json"
+    content: |
+      {
+        "exec-opts": [ "native.cgroupdriver=systemd" ],
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "100m"
+        },
+        "storage-driver": "overlay2"
+      }
+  notify:
+    - restart docker
