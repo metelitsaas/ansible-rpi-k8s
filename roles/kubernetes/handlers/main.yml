@@ -1,0 +1,8 @@
+---
+- name: Reboot host
+  reboot:
+    reboot_timeout: 60
+
+- name: Wait cluster
+  pause:
+    seconds: 60

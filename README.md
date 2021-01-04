@@ -1,10 +1,10 @@
-# ansible-rpi-k8s
+## ansible-rpi-k8s
 Kubernetes installation on RaspberryPi by Ansible.
 
 Master:
 - RPI 4 2G
 
-## 1. OS installation
+### 1. OS installation
 Image writing to SD card
 ```
 # Find out SD card device, /dev/disk2 in my case
@@ -36,12 +36,12 @@ Enable SSH at first boot
 touch /Volumes/boot/ssh
 ```
 
-## 2. OS configuration
+### 2. OS configuration
 After first boot find out RPI's IP in your network
 ```
 arp -a
 ```
-It is 192.168.0.18 in my case.
+It is 192.168.0.18 in my case, so add it to hosts file.
 
 Connect to RPI by SSH, login/pass by default pi/raspberry
 ```
@@ -66,13 +66,11 @@ static domain_name_servers=8.8.8.8' | sudo tee -a /etc/dhcpcd.conf
 Create new user
 ```
 sudo adduser admin
-sudo passwd admin
 sudo usermod -G sudo admin
 ```
 
-Enable SFTP server and SSH access only for admin user
+Enable SSH access only for admin user
 ```
-echo "Subsystem sftp internal-sftp"  | sudo tee -a /etc/ssh/sshd_config
 echo "AllowUsers admin"  | sudo tee -a /etc/ssh/sshd_config
 sudo systemctl restart sshd
 ```
@@ -86,7 +84,8 @@ ssh-keygen -t rsa
 ssh-copy-id admin@192.168.0.18
 ```
 
-## 3. Run playbook
+### 3. Install Kubernetes
+Run playbook
 ```
 ansible-playbook -i hosts site.yml --ask-become-pass
 ```

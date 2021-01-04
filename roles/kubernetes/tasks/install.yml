@@ -1,0 +1,47 @@
+---
+- name : Add Kubernetes apt repo key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Add Kubernetes apt repo link
+  apt_repository:
+    repo: deb http://packages.cloud.google.com/apt/ kubernetes-xenial main
+    state: present
+
+- name: Update apt repo
+  apt:
+    update_cache: yes
+
+- name: Install Kubernetes base packages
+  apt:
+    pkg:
+      - "kubeadm={{ kubernetes_version }}"
+      - "kubelet={{ kubernetes_version }}"
+      - "kubectl={{ kubernetes_version }}"
+    state: present
+    force: yes
+
+- name: Install Kubernetes CNI package
+  apt:
+    name: "kubernetes-cni={{ kubernetes_cni_version }}"
+    state: present
+    force: yes
+
+- name: Fix raspbian cgroup driver issue
+  lineinfile:
+    path: "/boot/cmdline.txt"
+    regexp: '^(.*rootwait)$'
+    line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory '
+    state: present
+    backrefs: yes
+  notify: Reboot host
+
+- name: Disable swapfile
+  systemd:
+    name: dphys-swapfile
+    state: stopped
+    enabled: no
+
+- name: Force all notified handlers to run at this point
+  meta: flush_handlers

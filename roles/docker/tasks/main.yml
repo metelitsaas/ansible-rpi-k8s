@@ -53,4 +53,7 @@
         "storage-driver": "overlay2"
       }
   notify:
-    - restart docker
+    - Restart Docker
+
+- name: Force all notified handlers to run at this point
+  meta: flush_handlers

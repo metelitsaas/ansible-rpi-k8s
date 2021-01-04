@@ -1,0 +1,14 @@
+---
+- name: Check Flannel CNI status
+  shell: kubectl get ds --all-namespaces | grep flannel
+  ignore_errors: true
+  changed_when: false
+  register: cni_flag
+
+- name: Enable Flannel CNI
+  when: cni_flag is failed
+  shell: |
+    curl -sSL https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml | \
+    kubectl apply -f -
+  args:
+    warn: false

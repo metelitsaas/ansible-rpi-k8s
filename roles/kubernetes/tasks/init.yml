@@ -1,0 +1,45 @@
+---
+- name: Check is kubeadm has already run
+  stat:
+    path: "/etc/kubernetes/pki/ca.key"
+  register: kubeadm_flg
+
+- name: Initialize cluster if necessary
+  when: not kubeadm_flg.stat.exists
+  command: |
+    kubeadm init \
+      --pod-network-cidr={{ pod_network_cidr }} \
+      --service-cidr={{ service_cidr }}
+  notify: Wait cluster
+
+- name: Create root kubeconfig directory, for sudo support
+  file:
+    path: "/root/.kube"
+    state: directory
+
+- name: Copy root kubeconfig file, for sudo support
+  copy:
+    src: "/etc/kubernetes/admin.conf"
+    dest: "/root/.kube/config"
+    remote_src: yes
+
+- name: Create admin kubeconfig directory
+  file:
+    path: "/home/{{ ansible_ssh_user }}/.kube"
+    state: directory
+
+- name: Copy admin kubeconfig file
+  copy:
+    src: "/etc/kubernetes/admin.conf"
+    dest: "/home/{{ ansible_ssh_user }}/.kube/config"
+    remote_src: yes
+
+- name: Enable kubelet service
+  systemd:
+    name: kubelet
+    daemon_reload: yes
+    state: started
+    enabled: yes
+
+- name: Force all notified handlers to run at this point
+  meta: flush_handlers

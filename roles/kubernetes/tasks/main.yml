@@ -1,0 +1,9 @@
+---
+- name: Kubernetes installation
+  include_tasks: install.yml
+
+- name: Initialize cluster
+  include_tasks: init.yml
+
+- name: Configurate CNI
+  include_tasks: cni.yml
