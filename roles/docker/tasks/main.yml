@@ -55,5 +55,12 @@
   notify:
     - Restart Docker
 
+- name: Add remote user to docker group
+  user:
+    name: "{{ ansible_ssh_user }}"
+    shell: /bin/bash
+    groups: docker
+    append: yes
+
 - name: Force all notified handlers to run at this point
   meta: flush_handlers

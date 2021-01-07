@@ -1,0 +1,9 @@
+---
+- name: Install Kubernetes
+  hosts: raspberrypi
+  become: yes
+  roles:
+    - upgrade
+    - docker
+    - docker-compose
+    - kubernetes

@@ -84,8 +84,18 @@ ssh-keygen -t rsa
 ssh-copy-id admin@192.168.0.18
 ```
 
-### 3. Install Kubernetes
-Run playbook
+### 3. Playbooks
+Main playbook
 ```
-ansible-playbook -i hosts site.yml --ask-become-pass
+ansible-playbook -i hosts playbook-main.yml --ask-become-pass
+```
+
+Kubernetes playbook
+```
+ansible-playbook -i hosts playbook-kubernetes.yml --ask-become-pass
+```
+
+Docker-compose playbook
+```
+ansible-playbook -i hosts playbook-docker-compose.yml --ask-become-pass
 ```
